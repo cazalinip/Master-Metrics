@@ -1,0 +1,23 @@
+# Ignorar ambientes virtuais
+venv/
+env/
+.venv/
+
+# Ignorar arquivos específicos de IDEs/editors
+.idea/
+.vscode/
+
+# Ignorar arquivos de configuração de dependências
+*.pyc
+__pycache__/
+
+# Ignorar arquivos sensíveis
+.env
+
+# Ignorar caches do Streamlit
+/.streamlit/
+!.streamlit/config.toml
+
+# Ignorar outros arquivos temporários
+*.log
+/temp/
