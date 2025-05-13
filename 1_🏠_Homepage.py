@@ -111,7 +111,7 @@ class HomePage():
 
         elif self.verificar_email():
             self.mostrar_conteudo()
-            print(f"[LOGIN] - [{datetime.datetime.today().strftime("%d-%m-%Y %H:%M:%S")}] {st.session_state['setor']}")
+            print(f"[LOGIN] - [{datetime.datetime.today().strftime('%d-%m-%Y %H:%M:%S')}] {st.session_state['setor']}")
 
         else:
             self.email_nao_permitido()

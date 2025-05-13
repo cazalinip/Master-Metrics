@@ -33,10 +33,6 @@ class Qualidade():
 
             with tab1:
                 self.tab1()
-
-
-            if st.sidebar.button('Gerar relatório mensal', help='Faça download do gráfico "Achados mais frequentes" para cada responsável'):
-                self.gerar_relatorio(self.df, self.anos, self.meses)
             
 
     def valor_padrao_filtros(self):
@@ -177,6 +173,9 @@ class Qualidade():
             self.grafs_achados_frequentes_tab1()
             self.grafs_achados_protocolos_tab1()
             self.grafs_resps_por_achado_tab1()
+
+            if st.sidebar.button('Gerar relatório mensal', help='Faça download do gráfico "Achados mais frequentes" para cada responsável'):
+                self.gerar_relatorio(self.df, self.anos, self.meses)
 
 
 if __name__ == "__main__":
