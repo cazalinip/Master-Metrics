@@ -3,7 +3,7 @@ import streamlit as st
 
 class ChecarAutenticacao():
     def __init__(self):
-        if not self.usuario_logado() or not self.resgatar_setor:
+        if not self.usuario_logado():
             st.set_option('client.showSidebarNavigation', False)
             st.switch_page('1_🏠_Homepage.py')
         else:
