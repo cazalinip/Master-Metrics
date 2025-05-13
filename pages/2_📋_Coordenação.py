@@ -5,11 +5,10 @@ import assets.Coordenacao.Coord_Charts as c_charts
 import os
 from checar_login import ChecarAutenticacao
 from progress_bar import ProgressBar
-from dotenv import load_dotenv
 
-load_dotenv()
-url_tabela_qual_coord = os.getenv("PLAN_QUAL_COORD")
-url_plan_desv = os.getenv("PLAN_DESV")
+
+url_tabela_qual_coord = st.secrets['urls']["PLAN_QUAL_COORD"]
+url_plan_desv = st.secrets['urls']["PLAN_DESV"]
 
 
 class Coordenacao():
@@ -19,7 +18,7 @@ class Coordenacao():
         if 'setor' not in st.session_state:
             st.switch_page('1_🏠_Homepage.py')
         
-        elif st.session_state['setor'] not in os.getenv('PERM_COORD').split(','):
+        elif st.session_state['setor'] not in st.secrets['permissions']['PERM_COORD']:
             st.warning('Você não tem acesso à esta página. Troque de conta ou converse com o administrador.')
             if st.button('Trocar de conta'):
                 st.logout()

@@ -3,9 +3,7 @@ import re
 import os
 import warnings
 import datetime
-from dotenv import load_dotenv
 
-load_dotenv()
 
 # Supressão de avisos conhecidas que não são um problema
 def custom_warning_filter(message, category, filename, lineno, file=None, line=None):
@@ -35,13 +33,15 @@ class HomePage():
 
     def usuario_logado(self):
         '''Checar se o usuário está logado ou não'''
+        if not st.user:
+            return False
         return st.user['is_logged_in']
     
 
     def whitelist(self):
         '''Carrega e define a lista de e-mails permitidos (whitelist)'''
         try:
-            emails_permitidos = list(os.getenv("WHITELIST").split(','))
+            emails_permitidos = st.secrets['whitelist']['emails'].split(',')
             if not emails_permitidos:
                 raise ValueError('A variável de e-mails está vazia')
             return emails_permitidos

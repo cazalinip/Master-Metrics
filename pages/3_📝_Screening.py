@@ -5,12 +5,11 @@ import os
 import assets.Screening.Screening_Charts as SCR_charts
 import assets.Screening.Screening_Treatments as SCR_treats
 from checar_login import ChecarAutenticacao
-from dotenv import load_dotenv
 
-load_dotenv()
-URL_2023=os.getenv('PLAN_SCR_2023')
-URL_2024=os.getenv('PLAN_SCR_2024')
-URL_2025=os.getenv('PLAN_SCR_2025')
+
+URL_2023=st.secrets['urls']['PLAN_SCR_2023']
+URL_2024=st.secrets['urls']['PLAN_SCR_2024']
+URL_2025=st.secrets['urls']['PLAN_SCR_2025']
 
 class Screening():
     def __init__(self):
@@ -19,7 +18,7 @@ class Screening():
         if 'setor' not in st.session_state:
             st.switch_page('1_🏠_Homepage.py')
 
-        elif st.session_state['setor'] not in os.getenv('PERM_SCR').split(','):
+        elif st.session_state['setor'] not in st.secrets['permissions']['PERM_SCR']:
             st.warning('Você não tem acesso à esta página. Troque de conta ou converse com o administrador.')
             if st.button('Trocar de conta'):
                 st.logout()

@@ -5,10 +5,9 @@ import assets.Qualidade.Qual_charts as qcharts
 import os
 from checar_login import ChecarAutenticacao
 from progress_bar import ProgressBar
-from dotenv import load_dotenv
 
-load_dotenv()
-url_plan_qual = os.getenv('PLAN_QUAL')
+
+url_plan_qual = st.secrets['urls']['PLAN_QUAL']
 
 
 class Qualidade():
@@ -18,7 +17,7 @@ class Qualidade():
         if 'setor' not in st.session_state:
             st.switch_page('1_🏠_Homepage.py')
 
-        elif st.session_state['setor'] not in os.getenv('PERM_COORD').split(','):
+        elif st.session_state['setor'] not in st.secrets['permissions']['PERM_QUAL']:
             st.warning('Você não tem acesso à esta página. Troque de conta ou converse com o administrador.')
             if st.button('Trocar de conta'):
                 st.logout()
