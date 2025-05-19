@@ -82,12 +82,12 @@ class Screening():
 
 
     def filtros_opcionais(self):
-        wants_filter_month = st.sidebar.checkbox('Quer filtrar por mês?')
+        wants_filter_month = st.sidebar.toggle('Quer filtrar por mês?')
         if wants_filter_month:
             picked_month = st.sidebar.slider('Escolha um mês', min_value=1, max_value=12, value=(1,12)) #Escolhe o mês
             self.meses = list(range(picked_month[0], picked_month[1] +1)) # Gera os números dentro do intervalo (tipo 1 até 12+1)
 
-        wants_filter_year = st.sidebar.checkbox('Quer filtrar por ano?', disabled=False)
+        wants_filter_year = st.sidebar.toggle('Quer filtrar por ano?', disabled=False)
         if wants_filter_year:
             picked_year = st.sidebar.slider('Escolha um ano', min_value=int(self.min_year), max_value=int(self.max_year), value=(int(self.min_year), int(self.max_year)), step=1) #Escolhe o ano
             self.anos = list(range(picked_year[0], picked_year[1] +1)) # Gera os números dentro do intervalo (tipo 2022 até 2024+1)
@@ -359,7 +359,7 @@ class Screening():
 
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            wants_study = st.checkbox('Quer filtrar por estudo específico?', key='AssXMedXStatusBox')
+            wants_study = st.toggle('Quer filtrar por estudo específico?', key='AssXMedXStatusBox')
         with col2, col3, col4: 
             st.empty()
         
