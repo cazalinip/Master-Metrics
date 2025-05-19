@@ -458,7 +458,7 @@ class Screening():
         hoje = datetime.datetime.today()
         mes_atual, ano_atual = hoje.month, hoje.year
 
-        tipo = st.radio("🔍 Selecione o tipo de estudo:", options=['Ambos', 'Onco', 'Multi'], index=0, horizontal=True)
+        tipo = st.segmented_control("🔍 Selecione o tipo de estudo:", options=['Ambos', 'Onco', 'Multi'], default='Ambos', selection_mode='single')
         tipo_label = None if tipo == 'Ambos' else tipo
 
         resumo_tcle, resumo_pre, cat_tcle, cat_pre = SCR_treats.gerar_relatorio_mes(
