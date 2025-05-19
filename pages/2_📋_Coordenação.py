@@ -54,29 +54,29 @@ class Coordenacao():
 
     
     def filtros_opcionais(self):
-        wants_filter_month = st.sidebar.checkbox('Quer filtrar por mês?')
+        wants_filter_month = st.sidebar.toggle('Quer filtrar por mês?')
         if wants_filter_month:
             picked_month = st.sidebar.slider('Escolha um mês', min_value=1, max_value=12, value=(1,12)) #Escolhe o mês
             self.meses = list(range(picked_month[0], picked_month[1] +1)) # Gera os números dentro do intervalo (tipo 1 até 12+1)
 
-        wants_filter_year = st.sidebar.checkbox('Quer filtrar por ano?', disabled=False)
+        wants_filter_year = st.sidebar.toggle('Quer filtrar por ano?', disabled=False)
         if wants_filter_year:
             picked_year = st.sidebar.slider('Escolha um ano', min_value=int(self.min_year), max_value=int(self.max_year), value=(int(self.min_year), int(self.max_year)), step=1) #Escolhe o ano
             self.anos = list(range(picked_year[0], picked_year[1] +1)) # Gera os números dentro do intervalo (tipo 2022 até 2024+1)
 
-        wants_filter_study = st.sidebar.checkbox('Quer filtrar por estudo?')
+        wants_filter_study = st.sidebar.toggle('Quer filtrar por estudo?')
         if wants_filter_study:
             list_of_studies = self.df['Estudo'].unique()
             picked_study = st.sidebar.multiselect('Veja os estudos', options=list_of_studies, placeholder='Escolha os estudos')
             self.estudos = picked_study
 
-        wants_filter_category = st.sidebar.checkbox('Quer filtrar por categoria?')
+        wants_filter_category = st.sidebar.toggle('Quer filtrar por categoria?')
         if wants_filter_category:
             list_of_categories = self.df['Categoria'].unique()
             picked_category = st.sidebar.multiselect('Veja as categorias', options=list_of_categories, placeholder='Escolha as categorias')
             self.categorias = picked_category
 
-        wants_filter_sector = st.sidebar.checkbox('Quer filtrar por setor?')
+        wants_filter_sector = st.sidebar.toggle('Quer filtrar por setor?')
         if wants_filter_sector:
             list_of_sectors = self.df['Setor'].unique()
             picked_sector = st.sidebar.multiselect('Veja os setores', options=list_of_sectors, placeholder='Escolha os setores')
