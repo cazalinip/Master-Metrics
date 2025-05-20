@@ -142,7 +142,7 @@ class Qualidade():
 
         if arquivos:
             zip_file = qcharts.gerar_arquivo_zip(arquivos)
-            zip_filename = f"Desvios_{datetime.datetime.now().strftime('%d-%m-%Y')}.zip"
+            zip_filename = f"Achados_{datetime.datetime.now().strftime('%d-%m-%Y')}.zip"
             
             with open((zip_file), 'rb') as f:
                 st.sidebar.download_button(
