@@ -33,6 +33,10 @@ class Qualidade():
 
             with tab1:
                 self.tab1()
+
+
+            if st.sidebar.button('Gerar relatório mensal', help='Faça download do gráfico "Achados mais frequentes" para cada responsável'):
+                self.gerar_relatorio(self.df, self.anos, self.meses)
             
 
     def valor_padrao_filtros(self):
@@ -49,23 +53,23 @@ class Qualidade():
 
 
     def filtros_opcionais(self):
-        wants_filter_month = st.sidebar.checkbox('Quer filtrar por mês?')
+        wants_filter_month = st.sidebar.toggle('Quer filtrar por mês?')
         if wants_filter_month:
             picked_month = st.sidebar.slider('Escolha um mês', min_value=1, max_value=12, value=(1,12))
             self.meses = list(range(picked_month[0], picked_month[1] +1)) # Gera os números dentro do intervalo (tipo 1 até 12+1)
 
-        wants_filter_year = st.sidebar.checkbox('Quer filtrar por ano?')
+        wants_filter_year = st.sidebar.toggle('Quer filtrar por ano?')
         if wants_filter_year:
             picked_year = st.sidebar.slider('Escolha um ano', min_value=self.min_year, max_value=self.max_year, value=(self.min_year, self.max_year), step=1)
             self.anos = list(range(picked_year[0], picked_year[1] +1)) # Gera os números dentro do intervalo (tipo 2022 até 2024+1)
 
-        wants_filter_study = st.sidebar.checkbox('Quer filtrar por estudo?')
+        wants_filter_study = st.sidebar.toggle('Quer filtrar por estudo?')
         if wants_filter_study:
             list_of_studies = self.df['Protocolo'].unique()
             picked_study = st.sidebar.multiselect('Veja os estudos', options=list_of_studies, placeholder='Escolha os estudos')
             self.estudos = picked_study
 
-        self.wants_filter_resp = st.sidebar.checkbox('Quer filtrar por responsável?')
+        self.wants_filter_resp = st.sidebar.toggle('Quer filtrar por responsável?')
         if self.wants_filter_resp:
             list_of_responsaveis = self.df['Responsável'].unique()
             self.picked_resp = st.sidebar.multiselect('Selecione um responsável', options=list_of_responsaveis, placeholder='Escolha os responsáveis')
@@ -138,7 +142,7 @@ class Qualidade():
 
         if arquivos:
             zip_file = qcharts.gerar_arquivo_zip(arquivos)
-            zip_filename = f"Desvios_{datetime.datetime.now().strftime('%d-%m-%Y')}.zip"
+            zip_filename = f"Achados_{datetime.datetime.now().strftime('%d-%m-%Y')}.zip"
             
             with open((zip_file), 'rb') as f:
                 st.sidebar.download_button(
@@ -173,9 +177,6 @@ class Qualidade():
             self.grafs_achados_frequentes_tab1()
             self.grafs_achados_protocolos_tab1()
             self.grafs_resps_por_achado_tab1()
-
-            if st.sidebar.button('Gerar relatório mensal', help='Faça download do gráfico "Achados mais frequentes" para cada responsável'):
-                self.gerar_relatorio(self.df, self.anos, self.meses)
 
 
 if __name__ == "__main__":
