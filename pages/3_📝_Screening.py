@@ -455,14 +455,11 @@ class Screening():
 
 
     def relatorio_mensal_tab4(self):
-        hoje = datetime.datetime.today()
-        mes_atual, ano_atual = hoje.month, hoje.year
-
         tipo = st.segmented_control("🔍 Selecione o tipo de estudo:", options=['Ambos', 'Onco', 'Multi'], default='Ambos', selection_mode='single')
         tipo_label = None if tipo == 'Ambos' else tipo
 
         resumo_tcle, resumo_pre, cat_tcle, cat_pre = SCR_treats.gerar_relatorio_mes(
-            self.df_TCLE_agrupado, self.df_Pré_TCLE, self.df_Mot_Cat, [mes_atual], [ano_atual], tipo_label)
+            self.df_TCLE_agrupado, self.df_Pré_TCLE, self.df_Mot_Cat, self.meses, self.anos, tipo_label)
         
         col1, col2 = st.columns(2)
         with col1:
