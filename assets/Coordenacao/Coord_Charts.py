@@ -351,6 +351,46 @@ def bar_chart_control_qual_tempos(dataframe: pd.DataFrame, meses: None, anos: No
         title='Tempo Coordenação vs Entrega Auditoria por Mês/Ano'
     )
 
+    fig.update_layout(
+        title_font = dict(size=24)
+    )
+
+    return fig
+
+
+def bar_chart_media_tot_proc(dataframe: pd.DataFrame, meses: None, anos: None):
+    df = dataframe.copy()
+
+    if anos:
+        df = df[df['Data Registro'].dt.year.isin(anos)]
+        if df.empty:
+            return None
+    
+    if meses:
+        df = df[df['Data Registro'].dt.month.isin(meses)]
+        if df.empty:
+            return None
+        
+    media_por_mes = round(df.groupby(['Mês', 'Ano'])[['Tempo total do processo']].mean(),2).reset_index(names=['Mes', 'Ano'])
+    media_por_mes['Ano'] = media_por_mes['Ano'].astype(str)
+        
+    fig = px.bar(
+        media_por_mes,
+        x='Mes',
+        y='Tempo total do processo',
+        color='Ano',
+        barmode='group',
+        color_discrete_sequence=px.colors.qualitative.Prism, opacity=0.8,
+        text_auto=True,
+        labels={'Tempo total do processo': 'Média de Tempo em dias',
+                'Ano': 'Ano'},
+        title='Média Tempo Total Processo em dias'
+    )
+
+    fig.update_layout(
+        title_font = dict(size=24)
+    )
+
     return fig
 
 
