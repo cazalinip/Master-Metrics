@@ -150,12 +150,17 @@ class Coordenacao():
 # Tab2
     def grafs_tempos_coord_audit(self):
         bar_chart_control_qual_tempos = c_charts.bar_chart_control_qual_tempos(dataframe=self.df_tempos, anos=self.anos, meses=self.meses)
-        if bar_chart_control_qual_tempos != None:
+        bar_chart_media_tot_proc = c_charts.bar_chart_media_tot_proc(dataframe=self.df_tempos, anos=self.anos, meses=self.meses)
+        
+        if bar_chart_media_tot_proc != None and bar_chart_control_qual_tempos != None:
             st.plotly_chart(bar_chart_control_qual_tempos)
-            st.info('Este gráfico é afetado por filtros de tempo, somente.')
+            st.plotly_chart(bar_chart_media_tot_proc)
+            st.info('Estes gráficos são afetados por filtros de tempo, somente.')
+            
             with st.expander('Ver planilha'):
                 st.write(st.session_state['dados_tab_qual_coord'])
                 st.info('Você pode fazer o download da tabela passando o mouse em cima e clicando na setinha ↓')
+            
         else:
             st.error('Não há dados nestas condições')
             st.empty()
