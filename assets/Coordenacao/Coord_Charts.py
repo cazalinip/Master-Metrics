@@ -22,6 +22,7 @@ pio.defaults = [
     "--single-process",
 ]
 
+kaleido.get_chrome_sync()
 
 def bar_chart_desvios(dataframe: pd.DataFrame, anos: None, meses: None, estudos: None, categoria_selecionada: None, setor_selecionado: None):
     """
@@ -436,6 +437,7 @@ def gerar_grafico_relatorio(dataframe: pd.DataFrame, estudo, setor, categoria):
         figures.append(graf)
         caminhos.append(caminho)
 
+    kaleido.get_chrome_sync()
     pio.write_images(fig=figures, file=caminhos)
 
     
