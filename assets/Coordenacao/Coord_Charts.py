@@ -8,7 +8,7 @@ import zipfile
 import kaleido
 
 
-chrome_path = st.secrets["CHROME_PATH"]
+chrome_path = st.secrets["chrome_path"]["CHROME_PATH"]
 os.environ["CHROME_PATH"] = chrome_path
 
 # instala o chromium + dependências
