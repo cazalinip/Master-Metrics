@@ -4,6 +4,7 @@ import plotly.io as pio
 import datetime
 import os
 import zipfile
+import kaleido
 
 
 def bar_chart_desvios(dataframe: pd.DataFrame, anos: None, meses: None, estudos: None, categoria_selecionada: None, setor_selecionado: None):
@@ -419,6 +420,15 @@ def gerar_grafico_relatorio(dataframe: pd.DataFrame, estudo, setor, categoria):
         figures.append(graf)
         caminhos.append(caminho)
 
+    # Definindo o caminho para a pasta temporária
+    temp_dir = os.path.join(os.getcwd(), 'temp_chrome')
+
+    # Cria a pasta, se não existir
+    os.makedirs(temp_dir, exist_ok=True)
+
+    # Baixa o Chrome para o diretório especificado
+    chrome_path = kaleido.get_chrome(path=temp_dir)
+    
     pio.write_images(fig=figures, file=caminhos)
 
     
