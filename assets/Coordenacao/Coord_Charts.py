@@ -1,4 +1,5 @@
 import pandas as pd
+import streamlit as st
 import plotly.express as px
 import plotly.io as pio
 import datetime
@@ -6,6 +7,9 @@ import os
 import zipfile
 import kaleido
 
+
+chrome_path = st.secrets["CHROME_PATH"]
+os.environ["CHROME_PATH"] = chrome_path
 
 # instala o chromium + dependências
 os.system("playwright install chromium")
@@ -18,7 +22,6 @@ pio.defaults = [
     "--single-process",
 ]
 
-kaleido.get_chrome_sync(path='temp_chrome')
 
 def bar_chart_desvios(dataframe: pd.DataFrame, anos: None, meses: None, estudos: None, categoria_selecionada: None, setor_selecionado: None):
     """
