@@ -10,7 +10,7 @@ import zipfile
 # os.system("playwright install-deps chromium")
 os.system("playwright install chromium")
 
-pio.io.defaults = [
+pio.defaults = [
     "--headless",
     "--no-sandbox",
     "--disable-gpu",
