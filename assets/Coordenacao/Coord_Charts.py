@@ -7,10 +7,10 @@ import zipfile
 
 
 # instala o chromium + dependências
-os.system("playwright install-deps chromium")
+# os.system("playwright install-deps chromium")
 os.system("playwright install chromium")
 
-pio.kaleido.scope.chromium_args = [
+pio.io.defaults = [
     "--headless",
     "--no-sandbox",
     "--disable-gpu",
