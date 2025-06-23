@@ -4,10 +4,10 @@ import plotly.io as pio
 import datetime
 import os
 import zipfile
+import kaleido
 
 
 # instala o chromium + dependências
-os.system("playwright install-deps chromium")
 os.system("playwright install chromium")
 
 pio.defaults = [
@@ -17,6 +17,8 @@ pio.defaults = [
     "--disable-dev-shm-usage",
     "--single-process",
 ]
+
+kaleido.get_chrome_sync(path='temp_chrome')
 
 def bar_chart_desvios(dataframe: pd.DataFrame, anos: None, meses: None, estudos: None, categoria_selecionada: None, setor_selecionado: None):
     """
