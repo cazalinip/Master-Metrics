@@ -170,11 +170,11 @@ def gerar_grafico_por_responsavel(dataframe: pd.DataFrame, anos: list=None, mese
 
         file_name = f"{responsavel[0]}.png"
         file_path = os.path.join(temp_dir, file_name)
-        fig.write_image(file_path)
         
-        return file_path
+
+        return file_path, fig
     
-    return None
+    return None, None
 
 
 def gerar_arquivo_zip(arquivos):
