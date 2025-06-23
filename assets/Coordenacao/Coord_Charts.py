@@ -7,7 +7,7 @@ import zipfile
 
 
 # instala o chromium + dependências
-# os.system("playwright install-deps chromium")
+os.system("playwright install-deps chromium")
 os.system("playwright install chromium")
 
 pio.defaults = [
