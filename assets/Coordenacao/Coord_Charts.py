@@ -1,5 +1,6 @@
 import pandas as pd
 import plotly.express as px
+import plotly.io as pio
 import datetime
 import os
 import zipfile
@@ -412,10 +413,13 @@ def gerar_grafico_relatorio(dataframe: pd.DataFrame, estudo, setor, categoria):
     os.makedirs(temp_dir, exist_ok=True)
 
     caminhos = []
+    figures = []
     for nome, graf in grafs.items():
         caminho = os.path.join(temp_dir, f"{nome}.png")
-        graf.write_image(caminho)
+        figures.append(graf)
         caminhos.append(caminho)
+
+    pio.write_images(fig=figures, file=caminhos)
 
     
     return caminhos
