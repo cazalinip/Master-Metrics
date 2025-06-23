@@ -4,8 +4,19 @@ import plotly.io as pio
 import datetime
 import os
 import zipfile
-import kaleido
 
+
+# instala o chromium + dependências
+os.system("playwright install-deps chromium")
+os.system("playwright install chromium")
+
+pio.kaleido.scope.chromium_args = [
+    "--headless",
+    "--no-sandbox",
+    "--disable-gpu",
+    "--disable-dev-shm-usage",
+    "--single-process",
+]
 
 def bar_chart_desvios(dataframe: pd.DataFrame, anos: None, meses: None, estudos: None, categoria_selecionada: None, setor_selecionado: None):
     """
@@ -420,7 +431,6 @@ def gerar_grafico_relatorio(dataframe: pd.DataFrame, estudo, setor, categoria):
         figures.append(graf)
         caminhos.append(caminho)
 
-    kaleido.get_chrome()
     pio.write_images(fig=figures, file=caminhos)
 
     
