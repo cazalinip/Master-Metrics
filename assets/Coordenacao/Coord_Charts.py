@@ -9,7 +9,6 @@ import kaleido
 
 
 chrome_path = st.secrets["chrome_path"]["CHROME_PATH"]
-os.environ["CHROME_PATH"] = chrome_path
 
 # instala o chromium + dependências
 os.system("playwright install chromium")
@@ -21,8 +20,6 @@ pio.defaults = [
     "--disable-dev-shm-usage",
     "--single-process",
 ]
-
-kaleido.get_chrome()
 
 def bar_chart_desvios(dataframe: pd.DataFrame, anos: None, meses: None, estudos: None, categoria_selecionada: None, setor_selecionado: None):
     """
@@ -437,9 +434,11 @@ def gerar_grafico_relatorio(dataframe: pd.DataFrame, estudo, setor, categoria):
         figures.append(graf)
         caminhos.append(caminho)
 
-    kaleido.get_chrome()
-    pio.write_images(fig=figures, file=caminhos)
+    kaleido_options = {
+        "path": chrome_path
+    }
 
+    pio.write_images(fig=figures, file=caminhos, kwargs="path")
     
     return caminhos
 
