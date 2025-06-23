@@ -3,6 +3,7 @@ import datetime
 import assets.Qualidade.Qual_treats as qtreats
 import assets.Qualidade.Qual_charts as qcharts
 import os
+import plotly.io
 from checar_login import ChecarAutenticacao
 from progress_bar import ProgressBar
 
@@ -122,7 +123,7 @@ class Qualidade():
 
 
     def gerar_relatorio(self, df, anos, meses):
-        responsaveis = df['Responsável'].unique()
+        responsaveis = df['Responsável'].str.strip().str.title().unique()
 
         # Garante que a pasta temp existe
         temp_dir = os.path.join(os.getcwd(), 'temp')
@@ -133,10 +134,14 @@ class Qualidade():
         barra.iniciar_carregamento(progress_text='Gerando arquivos...', emoji='⚙️')
 
         arquivos = []
+        figures = []
         for responsavel in responsaveis:
-            arquivos_grafico = qcharts.gerar_grafico_por_responsavel(df, anos, meses, responsavel)
-            if arquivos_grafico:
+            arquivos_grafico, fig = qcharts.gerar_grafico_por_responsavel(df, anos, meses, responsavel)
+            if arquivos_grafico and fig:
                 arquivos.append(arquivos_grafico)
+                figures.append(fig)
+
+        plotly.io.write_images(figures, arquivos)
         
         barra.finalizar_carregamento(progress_text='Pronto!', emoji='🚀')
 
