@@ -13,6 +13,8 @@ chrome_path = st.secrets["chrome_path"]["CHROME_PATH"]
 # instala o chromium + dependências
 os.system("playwright install chromium")
 
+kaleido.Kaleido(path=chrome_path)
+
 pio.defaults = [
     "--headless",
     "--no-sandbox",
@@ -434,11 +436,7 @@ def gerar_grafico_relatorio(dataframe: pd.DataFrame, estudo, setor, categoria):
         figures.append(graf)
         caminhos.append(caminho)
 
-    kaleido_options = {
-        "path": chrome_path
-    }
-
-    pio.write_images(fig=figures, file=caminhos, kwargs="path")
+    pio.write_images(fig=figures, file=caminhos)
     
     return caminhos
 
