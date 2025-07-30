@@ -103,8 +103,7 @@ class Regulatorio():
                 
             except Exception as e:
                 st.error(f'Erro de processamento! Por favor, verifique se o arquivo enviado é o correto.\n\n{e}')
-
-        return self.df
+            return self.df
 
     def aplicar_filtros_no_df(self, df, **filtros):
         for coluna, valor in filtros.items():
