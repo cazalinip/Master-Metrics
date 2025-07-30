@@ -90,22 +90,30 @@ class Regulatorio():
             st.empty()
 
     def upload_arquivo(self):
-        arquivo = st.file_uploader('Faça upload da planilha de Indicadores Regulatório aqui!', type='xlsx', key='planreg', help='Faça download da planilha e insira-a aqui!')
+        arquivo = st.file_uploader(
+            'Faça upload da planilha de Indicadores Regulatório aqui!',
+            type='xlsx',
+            key='planreg',
+            help='Faça download da planilha e insira-a aqui!'
+        )
+    
         if not arquivo:
             st.link_button('Indicadores Regulatório', url=url_plan_reg)
             st.session_state['dados_regulatorio'] = None
-
+    
         elif st.session_state['dados_regulatorio'] is None:
             try:
                 st.session_state['dados_regulatorio'] = r_treats.calcular_tempos(arquivo)
-                
             except Exception as e:
                 st.error(f'Erro de processamento! Por favor, verifique se o arquivo enviado é o correto.\n\n{e}')
-            finally:
-                self.df_original = st.session_state['dados_regulatorio'].copy()
-                self.df = self.df_original.copy()
-
-            return self.df, self.df_original
+    
+        # Definir df e df_original sempre que houver dados válidos
+        if st.session_state['dados_regulatorio'] is not None:
+            self.df_original = st.session_state['dados_regulatorio'].copy()
+            self.df = self.df_original.copy()
+        else:
+            self.df_original = pd.DataFrame()
+            self.df = pd.DataFrame()
 
     def aplicar_filtros_no_df(self, df, **filtros):
         for coluna, valor in filtros.items():
