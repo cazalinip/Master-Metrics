@@ -27,17 +27,18 @@ class Regulatorio():
             st.subheader('Distribuição de tempo entre as diversas etapas!')
 
             self.upload_arquivo()
-            
-            self.tabs = [':orange[Delta tempos]', ' ']
-            tab1, tab2 = st.tabs(self.tabs)
-            
-            self.valor_padrao_filtros()
 
-            with tab1:
-                self.tab1()
-            
-            with tab2:
-                st.empty()
+            if self.upload_arquivo() is not False:
+                self.tabs = [':orange[Delta tempos]', ' ']
+                tab1, tab2 = st.tabs(self.tabs)
+                
+                self.valor_padrao_filtros()
+    
+                with tab1:
+                    self.tab1()
+                
+                with tab2:
+                    st.empty()
 
 
     def valor_padrao_filtros(self):
@@ -104,6 +105,8 @@ class Regulatorio():
             except Exception as e:
                 st.error(f'Erro de processamento! Por favor, verifique se o arquivo enviado é o correto.\n\n{e}')
             return self.df
+
+        return False
 
     def aplicar_filtros_no_df(self, df, **filtros):
         for coluna, valor in filtros.items():
