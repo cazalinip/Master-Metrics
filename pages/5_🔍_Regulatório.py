@@ -98,11 +98,12 @@ class Regulatorio():
         elif st.session_state['dados_regulatorio'] is None:
             try:
                 st.session_state['dados_regulatorio'] = r_treats.calcular_tempos(arquivo)
+                self.df_original = st.session_state['dados_regulatorio'].copy()
+                self.df = self.df_original.copy()
+                
             except Exception as e:
                 st.error(f'Erro de processamento! Por favor, verifique se o arquivo enviado é o correto.\n\n{e}')
 
-        self.df_original = st.session_state['dados_regulatorio'].copy()
-        self.df = self.df_original.copy()
         return self.df
 
     def aplicar_filtros_no_df(self, df, **filtros):
