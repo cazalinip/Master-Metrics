@@ -105,7 +105,7 @@ class Regulatorio():
                 self.df_original = st.session_state['dados_regulatorio'].copy()
                 self.df = self.df_original.copy()
 
-        return self.df, self.df_original
+            return self.df, self.df_original
 
     def aplicar_filtros_no_df(self, df, **filtros):
         for coluna, valor in filtros.items():
