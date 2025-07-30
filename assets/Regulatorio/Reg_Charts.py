@@ -24,14 +24,14 @@ def bar_chart_dossie_tec(dataframe):
     df = dataframe[['PI', 'CAAE', 'Estudo', 'Patrocinador', 'Centro Coordenador?',
                      'Tipo de Submissão', 'Implementação?', 'Data de Solicitação', 'Dias úteis - Data de Solicitação → Data de Submissão']].copy()
     
-    df['mes'] = df['Data de Solicitação'].dt.month_name(locale='pt_BR')
+    df['mes'] = df['Data de Solicitação'].dt.month_name()
 
     media_mes = df.groupby('mes')['Dias úteis - Data de Solicitação → Data de Submissão'].mean().reset_index(name='Média')
     media_mes['label'] = media_mes['Média'].apply(lambda row: f'{row:.2f}')
 
     ordem_meses = [
-        'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-        'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
     ]
 
     media_mes['mes'] = pd.Categorical(media_mes['mes'], categories=ordem_meses, ordered=True)
