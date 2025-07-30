@@ -80,7 +80,6 @@ def calcular_tempos(df):
 
 def metricas_card(dataframe):
     df = dataframe.copy()
-    print(df.columns)
     
     # Médias da Solicitação
     metricas_sol = {
