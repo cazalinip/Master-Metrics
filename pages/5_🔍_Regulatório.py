@@ -28,17 +28,16 @@ class Regulatorio():
 
             self.upload_arquivo()
 
-            if self.upload_arquivo() is not False:
-                self.tabs = [':orange[Delta tempos]', ' ']
-                tab1, tab2 = st.tabs(self.tabs)
-                
-                self.valor_padrao_filtros()
-    
-                with tab1:
-                    self.tab1()
-                
-                with tab2:
-                    st.empty()
+            self.tabs = [':orange[Delta tempos]', ' ']
+            tab1, tab2 = st.tabs(self.tabs)
+            
+            self.valor_padrao_filtros()
+
+            with tab1:
+                self.tab1()
+            
+            with tab2:
+                st.empty()
 
 
     def valor_padrao_filtros(self):
@@ -105,8 +104,6 @@ class Regulatorio():
             except Exception as e:
                 st.error(f'Erro de processamento! Por favor, verifique se o arquivo enviado é o correto.\n\n{e}')
             return self.df
-
-        return False
 
     def aplicar_filtros_no_df(self, df, **filtros):
         for coluna, valor in filtros.items():
@@ -295,6 +292,9 @@ class Regulatorio():
             with st.expander('Ver planilha'):
                 st.write(self.df)
                 st.write(f'Registros nesta visualização: {self.df.shape[0]}')
+
+        else:
+            st.warning("Faça upload do arquivo para ver as métricas!", icon="⚠️")
 
 
 if __name__ == "__main__":
