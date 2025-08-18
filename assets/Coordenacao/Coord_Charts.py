@@ -1,6 +1,6 @@
 import pandas as pd
-import streamlit as st
 import plotly.express as px
+import plotly.io as pio
 import datetime
 import os
 import zipfile
@@ -110,6 +110,116 @@ def donut_chart_prejuizos(dataframe: pd.DataFrame, anos: None, meses: None, estu
 
     # Criar o gráfico de rosca
     fig = px.pie(prejuizos_count, names='Resposta', values='Número de Ocorrências', 
+                 color='Resposta', 
+                 color_discrete_sequence=px.colors.qualitative.Prism, opacity=0.8,
+                 hole=0.5)  # Define o gráfico como rosca com um buraco no meio
+
+    # Mostrar o gráfico
+    return fig
+
+
+def donut_chart_desv_viol(dataframe: pd.DataFrame, anos: None, meses: None, estudos: None, categoria_selecionada: None, setor_selecionado: None):
+    """
+    Cria e exibe um gráfico de rosca mostrando a distribuição dos valores na coluna 'Houve prejuízos para o participante?'.
+
+    Esta função conta o número de ocorrências dos valores 'Sim' e 'Não' na coluna fornecida e cria um
+    gráfico de rosca usando Plotly Express. O gráfico é exibido interativamente.
+
+    Args:
+        df (pd.DataFrame): O DataFrame a ser usado para criar o gráfico, que deve conter a coluna 'Houve prejuízos para o participante?'.
+
+    Returns:
+        None: A função exibe o gráfico diretamente e não retorna nenhum valor.
+    """
+    
+    df = dataframe.copy()
+    
+    if categoria_selecionada:
+        df = df[df['Categoria'].isin(categoria_selecionada)]
+        if df.empty:
+            return None
+            
+    if setor_selecionado:
+        df = df[df['Setor'].isin(setor_selecionado)]
+        if df.empty:
+            return None
+    
+    if anos:
+        df = df[df['Data da submissão'].dt.year.isin(anos)]
+        if df.empty:
+            return None
+        
+    if meses:
+        df = df[df['Data da submissão'].dt.month.isin(meses)]
+        if df.empty:
+            return None
+        
+    if estudos:
+        df = df[df['Estudo'].isin(estudos)]
+        if df.empty:
+            return None
+
+    # Agrupar e contar o número de ocorrências de cada valor na coluna 'Houve prejuízos para o participante?'
+    desv_viol_count = df['Desvio ou Violação'].value_counts().reset_index()
+    desv_viol_count.columns = ['Tipo de Ocorrência', 'Número de Ocorrências']
+
+    # Criar o gráfico de rosca
+    fig = px.pie(desv_viol_count, names='Tipo de Ocorrência', values='Número de Ocorrências', 
+                 color='Tipo de Ocorrência', 
+                 color_discrete_sequence=px.colors.qualitative.Prism, opacity=0.8,
+                 hole=0.5)  # Define o gráfico como rosca com um buraco no meio
+
+    # Mostrar o gráfico
+    return fig
+
+
+def donut_chart_just(dataframe: pd.DataFrame, anos: None, meses: None, estudos: None, categoria_selecionada: None, setor_selecionado: None):
+    """
+    Cria e exibe um gráfico de rosca mostrando a distribuição dos valores na coluna 'Houve prejuízos para o participante?'.
+
+    Esta função conta o número de ocorrências dos valores 'Sim' e 'Não' na coluna fornecida e cria um
+    gráfico de rosca usando Plotly Express. O gráfico é exibido interativamente.
+
+    Args:
+        df (pd.DataFrame): O DataFrame a ser usado para criar o gráfico, que deve conter a coluna 'Houve prejuízos para o participante?'.
+
+    Returns:
+        None: A função exibe o gráfico diretamente e não retorna nenhum valor.
+    """
+    
+    df = dataframe.copy()
+    
+    if categoria_selecionada:
+        df = df[df['Categoria'].isin(categoria_selecionada)]
+        if df.empty:
+            return None
+            
+    if setor_selecionado:
+        df = df[df['Setor'].isin(setor_selecionado)]
+        if df.empty:
+            return None
+    
+    if anos:
+        df = df[df['Data da submissão'].dt.year.isin(anos)]
+        if df.empty:
+            return None
+        
+    if meses:
+        df = df[df['Data da submissão'].dt.month.isin(meses)]
+        if df.empty:
+            return None
+        
+    if estudos:
+        df = df[df['Estudo'].isin(estudos)]
+        if df.empty:
+            return None
+
+    # Agrupar e contar o número de ocorrências de cada valor na coluna 'Houve prejuízos para o participante?'
+    justificavel = df['Justificável'].value_counts().reset_index()
+    justificavel.columns = ['Resposta', 'Número de Ocorrências']
+
+    # Criar o gráfico de rosca
+    fig = px.pie(justificavel, names='Resposta', values='Número de Ocorrências', 
                  color='Resposta', 
                  color_discrete_sequence=px.colors.qualitative.Prism, opacity=0.8,
                  hole=0.5)  # Define o gráfico como rosca com um buraco no meio
@@ -413,11 +523,15 @@ def gerar_grafico_relatorio(dataframe: pd.DataFrame, estudo, setor, categoria):
     os.makedirs(temp_dir, exist_ok=True)
 
     caminhos = []
+    figures = []
     for nome, graf in grafs.items():
         caminho = os.path.join(temp_dir, f"{nome}.png")
         graf.write_image(caminho)
+        figures.append(graf)
         caminhos.append(caminho)
-    
+
+    pio.write_images(fig=figures, file=caminhos)
+
     return caminhos
 
 

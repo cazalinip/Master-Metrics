@@ -37,12 +37,12 @@ def process_excel_file(excel_file) -> pd.DataFrame:
     # Iterar sobre cada planilha
     for sheet_name, sheet_df in df.items():
         # Ignorar a planilha 'MODELO'
-        if 'modelo' in sheet_name.lower() or 'folha' in sheet_name.lower():
+        if any(palavra in sheet_name.lower() for palavra in ['modelo', 'folha', 'operacionais', 'validação']):
             continue
 
         
         # Selecionar as colunas de interesse
-        new_df = sheet_df[['Categoria', 'Setor', 'Houve prejuízos para o participante?', 'Data do desvio', 'Data da ciência', 'Data da submissão']].copy()
+        new_df = sheet_df[['Categoria', 'Desvio ou Violação', 'Setor', 'Justificável','Houve prejuízos para o participante?', 'Data do desvio', 'Data da ciência', 'Data da submissão', 'Descrição']].copy()
         
         # Adicionar uma coluna 'estudo' com o nome da planilha
         new_df['Estudo'] = sheet_name
