@@ -250,7 +250,7 @@ class Regulatorio():
                         help=f"Cálculo: {explicacoes.get(label, 'Fórmula não especificada')}"
                     )
 
-        st.subheader("⏳ Tempos Importantes!")
+        st.subheader("⏳ Médias de Tempos Importantes!")
 
         # Define as linhas com os nomes exatos das métricas
         linhas_de_metricas = [
@@ -269,10 +269,6 @@ class Regulatorio():
             ],
             [
                 'Tempo legislativo de aceitação do projeto',
-                'Tempo legislativo do parecer em centro participante',
-                'Tempo legislativo do parecer em centro coordenador'
-            ],
-            [
                 'Tempo total ativação do Estudo'
             ]
         ]
