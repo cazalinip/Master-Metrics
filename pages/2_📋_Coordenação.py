@@ -134,7 +134,33 @@ class Coordenacao():
         else:
             st.error('Não há dados nestas condições')
             st.empty()
-    
+
+
+    def grafs_desv_viol(self):
+        donut_chart_desv_viol = c_charts.donut_chart_desv_viol(dataframe=self.df, anos=self.anos,
+                                       meses=self.meses, estudos=self.estudos, 
+                                       categoria_selecionada=self.categorias,
+                                       setor_selecionado=self.setores)
+
+        if donut_chart_desv_viol != None:
+            st.plotly_chart(donut_chart_desv_viol)
+        else:
+            st.error('Não há dados nestas condições')
+            st.empty()
+
+
+    def grafs_justificavel(self):
+        donut_chart_just = c_charts.donut_chart_just(dataframe=self.df, anos=self.anos,
+                                       meses=self.meses, estudos=self.estudos, 
+                                       categoria_selecionada=self.categorias,
+                                       setor_selecionado=self.setores)
+
+        if donut_chart_just != None:
+            st.plotly_chart(donut_chart_just)
+        else:
+            st.error('Não há dados nestas condições')
+            st.empty()
+
 
     def grafs_preju_pct(self):
         donut_chart_prejuizos = c_charts.donut_chart_prejuizos(dataframe=self.df, anos=self.anos, meses=self.meses, 
@@ -228,6 +254,15 @@ class Coordenacao():
             
             st.subheader('Contagem de Desvios por Setor')
             self.grafs_desvio_p_setor()
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.subheader('Distribuição de Desvio e Violação')
+                self.grafs_desv_viol()
+
+            with col2:
+                st.subheader('Distribuição de Justificável')
+                self.grafs_justificavel()
 
             with st.expander('Ver a planilha'):
                 col1, col2 = st.columns(2)

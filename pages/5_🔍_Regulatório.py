@@ -6,6 +6,7 @@ import re
 import pandas as pd
 from progress_bar import ProgressBar
 from checar_login import ChecarAutenticacao
+import time
 
 url_plan_reg = st.secrets['urls']["PLAN_REG"]
 
@@ -27,7 +28,7 @@ class Regulatorio():
             st.subheader('Distribuição de tempo entre as diversas etapas!')
 
             self.upload_arquivo()
-
+            
             self.tabs = [':orange[Delta tempos]', ' ']
             tab1, tab2 = st.tabs(self.tabs)
             
@@ -40,6 +41,32 @@ class Regulatorio():
                 st.empty()
 
 
+    def upload_arquivo(self):
+        arquivo = st.file_uploader(
+            'Faça upload da planilha de Indicadores Regulatório aqui!',
+            type='xlsx',
+            key='plan_reg',
+            help='Faça download da planilha e insira-a aqui!'
+        )
+
+        if not arquivo:
+            st.link_button('Indicadores Regulatório', url=url_plan_reg)
+            st.session_state['dados_regulatorio'] = None
+
+        elif st.session_state['dados_regulatorio'] is None:
+            try:
+                st.session_state['dados_regulatorio'] = r_treats.calcular_tempos(arquivo)
+            except Exception as e:
+                st.error(f'Erro de processamento! Por favor, verifique se o arquivo enviado é o correto.\n\n{e}')
+
+        # 🔁 Aqui é o ponto chave: define df e df_original sempre que houver dados válidos
+        if st.session_state['dados_regulatorio'] is not None:
+            self.df_original = st.session_state['dados_regulatorio'].copy()
+            self.df = self.df_original.copy()
+        else:
+            self.df_original = pd.DataFrame()
+            self.df = pd.DataFrame()
+        
     def valor_padrao_filtros(self):
         '''Configurando os atributos padrão dos gráficos'''
         self.meses = list(range(1,13))
@@ -89,31 +116,6 @@ class Regulatorio():
         else:
             st.empty()
 
-    def upload_arquivo(self):
-        arquivo = st.file_uploader(
-            'Faça upload da planilha de Indicadores Regulatório aqui!',
-            type='xlsx',
-            key='planreg',
-            help='Faça download da planilha e insira-a aqui!'
-        )
-    
-        if not arquivo:
-            st.link_button('Indicadores Regulatório', url=url_plan_reg)
-            st.session_state['dados_regulatorio'] = None
-    
-        elif st.session_state['dados_regulatorio'] is None:
-            try:
-                st.session_state['dados_regulatorio'] = r_treats.calcular_tempos(arquivo)
-            except Exception as e:
-                st.error(f'Erro de processamento! Por favor, verifique se o arquivo enviado é o correto.\n\n{e}')
-    
-        # Definir df e df_original sempre que houver dados válidos
-        if st.session_state['dados_regulatorio'] is not None:
-            self.df_original = st.session_state['dados_regulatorio'].copy()
-            self.df = self.df_original.copy()
-        else:
-            self.df_original = pd.DataFrame()
-            self.df = pd.DataFrame()
 
     def aplicar_filtros_no_df(self, df, **filtros):
         for coluna, valor in filtros.items():
@@ -164,13 +166,10 @@ class Regulatorio():
             self.df = self.df[self.df['Data de Solicitação'].dt.month.isin(self.mes_esc)]
 
 
-    def bar_chart_dossie_tec(self, dataframe):
-        chart_dossie_tec = r_charts.bar_chart_dossie_tec(dataframe)
-        if chart_dossie_tec != None:
-            st.plotly_chart(chart_dossie_tec)
-        else:
-            st.error('Não há dados nestas condições')
-            st.empty()
+    def grafico_dossie_e_tempo_total(self, dataframe):
+        chart_dossie_tec, chart_tempo_total_sub = r_charts.bar_chart_dossie_tempo_total(dataframe)
+
+        return chart_dossie_tec, chart_tempo_total_sub
 
     def pie_chart_pends(self, dataframe, titulo):
         pie_chart_pendencias = r_charts.pie_chart_pendencias(dataframe, titulo)
@@ -215,64 +214,70 @@ class Regulatorio():
         return df_atual, df_anterior
 
     def mostrar_metricas(self, df_atual, df_anterior):
-        m_sol_at, m_sub_at, pp_cep_at = r_treats.metricas_card(df_atual)
+        metricas_at = r_treats.metricas_card(df_atual)
+        metricas_ant = r_treats.metricas_card(df_anterior) if not df_anterior.empty else {}
 
-        if not df_anterior.empty:
-            m_sol_an, m_sub_an, pp_cep_an = r_treats.metricas_card(df_anterior)
-        else:
-            m_sol_an, m_sub_an, pp_cep_an = {}, {}, None
+        # Pares de datas para compor o help por métrica
+        pares_datas = [
+            ('Data de Solicitação', 'Data de Submissão', 'Tempo preparo dossiê técnico'),
+            ('Data de Solicitação', 'ATIVAÇÃO', 'Tempo total de submissão inicial'), 
+            ('Data de Solicitação', 'Data de Implementação', 'Tempo total de implementação de emenda'), 
+            ('Data de Submissão', 'Parecer CEP', 'Tempo liberação parecer centro participante'),
+            ('Data de Submissão', 'Parecer CONEP', 'Tempo liberação parecer centro coordenador'),
+            ('Data de Submissão', 'Data de Aceite do PP', 'Tempo legislativo de aceitação do projeto'),
+            ('Data de Aceite do PP', 'Parecer CEP', 'Tempo legislativo do parecer em centro participante'),
+            ('Data de Aceite do PP', 'Parecer CONEP', 'Tempo legislativo do parecer em centro coordenador'),
+            ('SIV', 'ATIVAÇÃO', 'Tempo total ativação do Estudo'), 
+        ]
 
-        # ⏳ Solicitações
-        st.subheader("⏳ Solicitações")
-        cols_sol = st.columns(len(m_sol_at))
-        for col, (label, value) in zip(cols_sol, m_sol_at.items()):
-            valor_passado = m_sol_an.get(label)
-            delta = value - valor_passado if valor_passado is not None and pd.notna(valor_passado) else None
-            col.metric(
-                label=label,
-                value=f'{value:.2f} dias',
-                delta=f'{delta:+.2f} dias' if delta is not None and pd.notna(delta) else None,
-                border=True,
-                delta_color='inverse'
-            )
+        # Cria um dicionário com os textos de ajuda
+        explicacoes = {nome: f"{fim} - {inicio}" for inicio, fim, nome in pares_datas}
 
-        # 📤 Submissões
-        st.subheader("📤 Submissões")
-        cols_sub = st.columns(len(m_sub_at))
-        for col, (label, value) in zip(cols_sub, m_sub_at.items()):
-            valor_passado = m_sub_an.get(label)
-            delta = value - valor_passado if valor_passado is not None and pd.notna(valor_passado) else None
-            col.metric(
-                label=label,
-                value=f'{value:.2f} dias',
-                delta=f'{delta:+.2f} dias' if delta is not None and pd.notna(delta) else None,
-                border=True,
-                delta_color='inverse'
-            )
+        def exibir_metricas(linhas_de_metricas):
+            for linha in linhas_de_metricas:
+                cols = st.columns(len(linha))
+                for col, label in zip(cols, linha):
+                    valor_atual = metricas_at.get(label, float('nan'))
+                    valor_passado = metricas_ant.get(label, None)
+                    delta = valor_atual - valor_passado if valor_passado is not None and pd.notna(valor_passado) else None
 
-        # 🗃️ Outros Indicadores
-        st.subheader("🗃️ Outros")
-        col1, col2, col3 = st.columns(3)
+                    col.metric(
+                        label=label,
+                        value=f'{valor_atual:.2f} dias' if pd.notna(valor_atual) else "N/A",
+                        delta=f'{delta:+.2f} dias' if delta is not None and pd.notna(delta) else None,
+                        border=True,
+                        delta_color='inverse',
+                        help=f"Cálculo: {explicacoes.get(label, 'Fórmula não especificada')}"
+                    )
 
-        # Lógica de cor manual: delta fictício baseado em valor absoluto, não comparação com mês anterior
-        if pp_cep_at is not None and pd.notna(pp_cep_at):
-            if pp_cep_at <= 30:
-                delta_text = "✅ < 30 dias"
-                delta_value = +1  # Força a setinha verde
-            else:
-                delta_text = "❌ > 30 dias"
-                delta_value = -1  # Força a setinha vermelha
-        else:
-            delta_text = None
-            delta_value = None
+        st.subheader("⏳ Tempos Importantes!")
 
-        col1.metric(
-            label='Aceite PP → CEP',
-            value=f'{pp_cep_at:.2f} dias',
-            delta=delta_text,
-            delta_color="normal" if delta_value is None else ("inverse" if delta_value < 0 else "normal"),
-            border=True
-        )
+        # Define as linhas com os nomes exatos das métricas
+        linhas_de_metricas = [
+            [
+                'Tempo preparo dossiê técnico',
+                'Tempo total de submissão inicial',
+                'Tempo total de implementação de emenda'
+            ],
+            [
+                'Tempo liberação parecer centro participante',
+                'Tempo liberação parecer centro coordenador'
+            ],
+            [
+                'Tempo legislativo do parecer em centro participante',
+                'Tempo legislativo do parecer em centro coordenador'
+            ],
+            [
+                'Tempo legislativo de aceitação do projeto',
+                'Tempo legislativo do parecer em centro participante',
+                'Tempo legislativo do parecer em centro coordenador'
+            ],
+            [
+                'Tempo total ativação do Estudo'
+            ]
+        ]
+
+        exibir_metricas(linhas_de_metricas)
 
 
     def tab1(self):
@@ -280,12 +285,23 @@ class Regulatorio():
             self.df = st.session_state['dados_regulatorio'].copy()
             self.filtros_opcionais()
             
+            dossie, tempo_total = self.grafico_dossie_e_tempo_total(self.df)
             col1, col2 = st.columns(2)
+
             with col1:
-                self.bar_chart_dossie_tec(self.df)
-                
+                if dossie is not None:
+                    st.plotly_chart(dossie)
+                else:
+                    st.info("Não há dados nestas condições.")
+
             with col2:
-                self.pie_chart_pends(self.df, titulo='Distribuição de Pendências por Tipo de Centro')
+                if tempo_total is not None:
+                    st.plotly_chart(tempo_total, use_container_width=True)
+                else:
+                    st.info("Não há dados nestas condições.")
+
+
+            self.pie_chart_pends(self.df, titulo='Distribuição de Pendências por Tipo de Centro')
             
             if self.filtros:
                 df_atual, df_anterior = self.separar_df_mes_atual_e_anterior(self.df_original, self.mes_esc, self.ano_esc, self.filtros)
@@ -297,7 +313,6 @@ class Regulatorio():
                 df_anterior = pd.DataFrame()  # zera o delta
 
             self.mostrar_metricas(df_atual, df_anterior)
-            st.divider()
 
             with st.expander('Ver planilha'):
                 st.write(self.df)
