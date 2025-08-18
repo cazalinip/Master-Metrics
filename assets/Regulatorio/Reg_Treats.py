@@ -45,25 +45,21 @@ def calcular_tempos(df):
 
     # Exemplos de pares de colunas para calcular tempo
     pares_datas = [
-        ('Data de Solicitação', 'Data de Submissão'),
-        ('Data de Solicitação', 'Parecer CEP'),
-        ('Data de Solicitação', 'Parecer CONEP'),
-        ('Data de Solicitação', 'Data de Implementação'),
-        ('Data de Solicitação', 'SIV'),
-        ('Data de Solicitação', 'ATIVAÇÃO'),
-        ('Data de Submissão', 'Parecer CEP'),
-        ('Data de Submissão', 'Parecer CONEP'),
-        ('Data de Submissão', 'Data de Implementação'),
-        ('Data de Submissão', 'SIV'),
-        ('Data de Submissão', 'ATIVAÇÃO'),
-        ('Data de Aceite do PP', 'Parecer CEP') # O prazo limite é de 30d
+        ('Data de Solicitação', 'Data de Submissão', 'Tempo preparo dossiê técnico'),
+        ('Data de Solicitação', 'ATIVAÇÃO', 'Tempo total de submissão inicial'), 
+        ('Data de Solicitação', 'Data de Implementação', 'Tempo total de implementação de emenda'), 
+        ('Data de Submissão', 'Parecer CEP', 'Tempo liberação parecer centro participante'),
+        ('Data de Submissão', 'Parecer CONEP', 'Tempo liberação parecer centro coordenador'),
+        ('Data de Submissão', 'Data de Aceite do PP', 'Tempo legislativo de aceitação do projeto'),
+        ('Data de Aceite do PP', 'Parecer CEP', 'Tempo legislativo do parecer em centro participante'),
+        ('Data de Aceite do PP', 'Parecer CONEP', 'Tempo legislativo do parecer em centro coordenador'),
+        ('SIV', 'ATIVAÇÃO', 'Tempo total ativação do Estudo'), 
     ]
 
     # Calcula os demais tempos úteis
     try:
-        for col_ini, col_fim in pares_datas:
-            nome_coluna_resultado = f"Dias úteis - {col_ini.strip()} → {col_fim.strip()}"
-            df[nome_coluna_resultado] = df.apply(
+        for col_ini, col_fim, nome_coluna in pares_datas:
+            df[nome_coluna] = df.apply(
                 lambda row: calcular_dias_uteis(row[col_ini], row[col_fim], feriados_np),
                 axis=1)
     except Exception as e:
@@ -82,26 +78,18 @@ def metricas_card(dataframe):
     df = dataframe.copy()
     
     # Médias da Solicitação
-    metricas_sol = {
-        'Solicitação → Submissão': df['Dias úteis - Data de Solicitação → Data de Submissão'].mean(),
-        'Solicitação → CEP': df['Dias úteis - Data de Solicitação → Parecer CEP'].mean(),
-        'Solicitação → CONEP': df['Dias úteis - Data de Solicitação → Parecer CONEP'].mean(),
-        'Solicitação → Implementação': df['Dias úteis - Data de Solicitação → Data de Implementação'].mean(),
-        'Solicitação → SIV': df['Dias úteis - Data de Solicitação → SIV'].mean(),
-        'Solicitação → Ativação': df['Dias úteis - Data de Solicitação → ATIVAÇÃO'].mean(),
+    metricas = {
+        'Tempo preparo dossiê técnico': df['Tempo preparo dossiê técnico'].mean(),
+        'Tempo total de submissão inicial': df['Tempo total de submissão inicial'].mean(),
+        'Tempo total de implementação de emenda': df['Tempo total de implementação de emenda'].mean(),
+        'Tempo liberação parecer centro participante': df['Tempo liberação parecer centro participante'].mean(),
+        'Tempo liberação parecer centro coordenador': df['Tempo liberação parecer centro coordenador'].mean(),
+        'Tempo legislativo de aceitação do projeto': df['Tempo legislativo de aceitação do projeto'].mean(),
+        'Tempo legislativo do parecer em centro participante': df['Tempo legislativo do parecer em centro participante'].mean(),
+        'Tempo legislativo do parecer em centro coordenador': df['Tempo legislativo do parecer em centro coordenador'].mean(),
+        'Tempo total ativação do Estudo': df['Tempo total ativação do Estudo'].mean()
     }
 
-    # Médias da Submissão
-    metricas_sub = {
-        'Submissão → CEP': df['Dias úteis - Data de Submissão → Parecer CEP'].mean(),
-        'Submissão → CONEP': df['Dias úteis - Data de Submissão → Parecer CONEP'].mean(),
-        'Submissão → Implementação': df['Dias úteis - Data de Submissão → Data de Implementação'].mean(),
-        'Submissão → SIV': df['Dias úteis - Data de Submissão → SIV'].mean(),
-        'Submissão → Ativação': df['Dias úteis - Data de Submissão → ATIVAÇÃO'].mean(),
-    }
 
-    # Tempo entre aceite do PP até CEP
-    tempo_pp_cep = df['Dias úteis - Data de Aceite do PP → Parecer CEP'].mean()
-
-    return metricas_sol, metricas_sub, tempo_pp_cep
+    return metricas
 
